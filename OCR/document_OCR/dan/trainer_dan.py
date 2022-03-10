@@ -35,13 +35,7 @@ class Manager(OCRManager):
         return y_error, y_len
 
     def train_batch(self, batch_data, metric_names):
-        # Add loss weight for <eot> token
-        weights = None
-        if self.params["model_params"]["weight_end_of_prediction"]:
-            vocab_size = self.params["model_params"]["vocab_size"] + 1
-            weights = torch.ones((vocab_size, ), device=self.device)
-            weights[self.dataset.tokens["end"]] = 10
-        loss_func = CrossEntropyLoss(weight=weights, ignore_index=self.dataset.tokens["pad"])
+        loss_func = CrossEntropyLoss(ignore_index=self.dataset.tokens["pad"])
 
         sum_loss = 0
         x = batch_data["imgs"].to(self.device)
@@ -150,7 +144,7 @@ class Manager(OCRManager):
                 reached_end = torch.logical_or(reached_end, torch.eq(predicted_tokens[:, -1], self.dataset.tokens["end"]))
                 predicted_tokens_len += 1
 
-                prediction_len[reached_end == False] = i
+                prediction_len[reached_end == False] = i + 1
                 if torch.all(reached_end):
                     break
 

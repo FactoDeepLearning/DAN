@@ -149,7 +149,6 @@ if __name__ == "__main__":
             "dec_pred_dropout": 0.1,  # dropout rate before decision layer
             "dec_att_dropout": 0.1,  # dropout rate in multi head attention
             "dec_dim_feedforward": 256,  # number of dimension for feedforward layer in transformer decoder layers
-            "dec_use_lstm_end_for_pred": True,  # Use one-layer LSTM before decision layer in decoder
             "use_2d_pe": True,  # use 2D positional embedding
             "use_1d_pe": True,  # use 1D positional embedding
             "attention_win": 100,  # length of attention window
@@ -198,10 +197,6 @@ if __name__ == "__main__":
                 "min_error_rate": 0.2,
                 "max_error_rate": 0.2,
                 "total_num_steps": 5e4
-            },
-            "gradient_clipping": {
-                "models": ["encoder", "decoder"],
-                "max": 1,
             },
         },
     }

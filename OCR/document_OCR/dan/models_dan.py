@@ -266,7 +266,6 @@ class GlobalHTADecoder(Module):
 
         self.dropout = Dropout(params["dec_pred_dropout"])
         self.dec_att_win = params["attention_win"] if params["attention_win"] is not None else 1
-        self.use_lstm_end_for_pred = params["dec_use_lstm_end_for_pred"]
 
         self.att_decoder = GlobalAttDecoder(params)
 
@@ -274,12 +273,7 @@ class GlobalHTADecoder(Module):
         self.pe_1d = PositionalEncoding1D(self.enc_dim, self.dec_l_max, params["device"])
         self.use_1d_pe = "use_1d_pe" not in params or params["use_1d_pe"]
 
-        self.use_lstm_predict = self.use_lstm_end_for_pred
-
         vocab_size = params["vocab_size"] + 1
-
-        if self.use_lstm_predict:
-            self.lstm_predict = LSTM(self.enc_dim, self.enc_dim)
 
         self.end_conv = Conv1d(self.enc_dim, vocab_size, kernel_size=1)
 
@@ -327,12 +321,7 @@ class GlobalHTADecoder(Module):
                                         predict_last_n_only=num_pred,
                                         keep_all_weights=keep_all_weights)
 
-        if self.use_lstm_predict:
-            ctx_output, hidden_predict = self.lstm_predict(output, hidden_predict)
-        else:
-            ctx_output = output
-
-        dp_output = self.dropout(relu(ctx_output))
+        dp_output = self.dropout(relu(output))
         preds = self.end_conv(dp_output.permute(1, 2, 0))
 
         if not keep_all_weights:

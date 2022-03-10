@@ -49,6 +49,7 @@ class PostProcessingModule:
     def __init__(self):
         self.prediction = None
         self.confidence = None
+        self.num_op = 0
 
     def post_processing(self):
         raise NotImplementedError
@@ -70,6 +71,7 @@ class PostProcessingModule:
         self.prediction.insert(index, label)
         if self.confidence is not None:
             self.confidence.insert(index, 0)
+        self.num_op += 1
 
     def del_label(self, index):
         """
@@ -78,6 +80,7 @@ class PostProcessingModule:
         del self.prediction[index]
         if self.confidence is not None:
             del self.confidence[index]
+        self.num_op += 1
 
 
 class PostProcessingModuleREAD(PostProcessingModule):

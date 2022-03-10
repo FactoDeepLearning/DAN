@@ -395,6 +395,23 @@ class READ2016DatasetFormatter(OCRDatasetFormatter):
                 return start_token + label
         return label
 
+    def merge_group_tr(self, group, text_region):
+        group["text_regions"].append(text_region)
+        group["coords"]["top"] = min([tr["coords"]["top"] for tr in group["text_regions"]])
+        group["coords"]["bottom"] = max([tr["coords"]["bottom"] for tr in group["text_regions"]])
+        group["coords"]["left"] = min([tr["coords"]["left"] for tr in group["text_regions"]])
+        group["coords"]["right"] = max([tr["coords"]["right"] for tr in group["text_regions"]])
+        group["baseline_coords"]["top"] = min([tr["baseline_coords"]["top"] for tr in group["text_regions"]])
+        group["baseline_coords"]["bottom"] = max([tr["baseline_coords"]["bottom"] for tr in group["text_regions"]])
+        group["baseline_coords"]["left"] = min([tr["baseline_coords"]["left"] for tr in group["text_regions"]])
+        group["baseline_coords"]["right"] = max([tr["baseline_coords"]["right"] for tr in group["text_regions"]])
+
+    def is_annotation_alone(self, groups, page_width):
+        for group in groups:
+            if all([tr["coords"]["right"] < page_width / 2 and not tr["label"].replace(".", "").replace(" ", "").isdigit() for tr in group["text_regions"]]):
+                return True
+        return False
+
     def sort_text_regions(self, text_regions, page_width):
         """
         Establish reading order based on paragraph pixel position:
@@ -419,25 +436,38 @@ class READ2016DatasetFormatter(OCRDatasetFormatter):
             for group in groups:
                 if not (group["baseline_coords"]["bottom"] <= text_region["baseline_coords"]["top"] or
                         group["baseline_coords"]["top"] >= text_region["baseline_coords"]["bottom"] or
-                        text_region["coords"]["right"]-text_region["coords"]["left"] > 0.4*page_width):
-                    group["text_regions"].append(text_region)
-                    group["coords"]["top"] = min([tr["coords"]["top"] for tr in group["text_regions"]])
-                    group["coords"]["bottom"] = max([tr["coords"]["bottom"] for tr in group["text_regions"]])
-                    group["coords"]["left"] = min([tr["coords"]["left"] for tr in group["text_regions"]])
-                    group["coords"]["right"] = max([tr["coords"]["right"] for tr in group["text_regions"]])
-                    group["baseline_coords"]["top"] = min([tr["baseline_coords"]["top"] for tr in group["text_regions"]])
-                    group["baseline_coords"]["bottom"] = max([tr["baseline_coords"]["bottom"] for tr in group["text_regions"]])
-                    group["baseline_coords"]["left"] = min([tr["baseline_coords"]["left"] for tr in group["text_regions"]])
-                    group["baseline_coords"]["right"] = max([tr["baseline_coords"]["right"] for tr in group["text_regions"]])
+                        (text_region["coords"]["right"]-text_region["coords"]["left"] > 0.4*page_width and
+                         group["coords"]["right"]-group["coords"]["left"] > 0.4*page_width)):
+                    self.merge_group_tr(group, text_region)
                     added_in_group = True
                     break
 
             if not added_in_group:
                 groups.append({
-                    "coords": text_region["coords"],
-                    "baseline_coords": text_region["baseline_coords"],
+                    "coords": text_region["coords"].copy(),
+                    "baseline_coords": text_region["baseline_coords"].copy(),
                     "text_regions": [text_region, ]
                 })
+        while self.is_annotation_alone(groups, page_width):
+            new_groups = list()
+            annotations_groups = list()
+            body_groups = list()
+            for i in range(len(groups)):
+                group = groups[i]
+                if all([tr["label"].replace(".", "").replace(" ","").isdigit() for tr in group["text_regions"]]):
+                    new_groups.append(group)
+                    continue
+                if all([tr["coords"]["right"] < page_width / 2 for tr in group["text_regions"]]):
+                    annotations_groups.append(group)
+                    continue
+                body_groups.append(group)
+            for ag in annotations_groups:
+                dist = [min([abs(ag["coords"]["bottom"]-g["coords"]["top"]), abs(ag["coords"]["top"]-g["coords"]["bottom"])]) for g in body_groups]
+                index = np.argmin(dist)
+                for tr in ag["text_regions"]:
+                    self.merge_group_tr(body_groups[index], tr)
+            new_groups.extend(body_groups)
+            groups = new_groups
         ordered_groups = sorted(groups, key=lambda g: g["coords"]["top"])
         sorted_text_regions = list()
         for group in ordered_groups:

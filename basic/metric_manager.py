@@ -67,7 +67,7 @@ class MetricManager:
         self.linked_metrics = {
             "cer": ["edit_chars", "nb_chars"],
             "wer": ["edit_words", "nb_words"],
-            "ger": ["edit_graph", "nb_nodes_and_edges"],
+            "ger": ["edit_graph", "nb_nodes_and_edges", "nb_pp_op_layout", "nb_gt_layout_token"],
             "precision": ["precision", "weights"],
             "layout_mAP_per_class": ["layout_mAP", ],
             "layout_precision_per_class_per_threshold": ["layout_mAP", ],
@@ -145,6 +145,7 @@ class MetricManager:
                 value = compute_global_mAP(self.epoch_metrics[metric_name])
             elif metric_name == "ger":
                 value = np.sum(self.epoch_metrics["edit_graph"]) / np.sum(self.epoch_metrics["nb_nodes_and_edges"])
+                display_values["percent_pp_op"] = np.sum(self.epoch_metrics["nb_pp_op_layout"]) / np.sum(self.epoch_metrics["nb_gt_layout_token"])
             elif value is None:
                 continue
 
@@ -178,7 +179,13 @@ class MetricManager:
                     pp_score.append(pred_score[1])
                 metrics[metric_name] = [compute_layout_mAP_per_class(y, x, conf, self.matching_tokens) for x, conf, y in zip(pp_pred, pp_score, values["str_y"])]
             elif metric_name == "ger":
-                pp_pred = [self.post_processing_module().post_process(pred) for pred in values["str_x"]]
+                pp_pred = list()
+                metrics["nb_pp_op_layout"] = list()
+                for pred in values["str_x"]:
+                    pp_module = self.post_processing_module()
+                    pp_pred.append(pp_module.post_process(pred))
+                    metrics["nb_pp_op_layout"].append(pp_module.num_op)
+                metrics["nb_gt_layout_token"] = [len(keep_only_tokens(str_x, self.layout_tokens)) for str_x in values["str_x"]]
                 edit_and_num_items = [self.edit_and_num_edge_nodes(y, x) for x, y in zip(pp_pred, values["str_y"])]
                 metrics["edit_graph"], metrics["nb_nodes_and_edges"] = [ei[0] for ei in edit_and_num_items], [ei[1] for ei in edit_and_num_items]
         return metrics
