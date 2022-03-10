@@ -44,7 +44,7 @@ def train_and_test(rank, params):
 
 if __name__ == "__main__":
 
-    dataset_name = "READ"  # ["RIMES", "READ_2016"]
+    dataset_name = "READ_2016"  # ["RIMES", "READ_2016"]
     dataset_level = "page"
     dataset_variant = "_sem"
 
@@ -75,8 +75,8 @@ if __name__ == "__main__":
                 "height_divisor": 32,  # Image height will be divided by 32
                 "padding_value": 0,  # Image padding value
                 "padding_token": None,  # Label padding value
-                "charset_mode": "seq2seq",  # add end-of-transcription token
-                "constraints": ["add_eot", "add_sot"], # "remove_linebreaks", #"max_size",
+                "charset_mode": "seq2seq",  # add end-of-transcription ans start-of-transcription tokens to charset
+                "constraints": ["add_eot", "add_sot"],  # add end-of-transcription ans start-of-transcription tokens in labels
                 "normalize": True,  # Normalize with mean and variance of training dataset
                 "preprocessings": [
                     {

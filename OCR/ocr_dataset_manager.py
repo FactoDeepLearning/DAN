@@ -263,6 +263,10 @@ class OCRDataset(GenericDataset):
             if rand() > proba:
                 return sample
 
+        if "mode" in config and config["mode"] == "line_hw_to_printed":
+            sample["img"] = self.generate_typed_text_line_image(sample["label"])
+            return sample
+
         return self.generate_synthetic_page_sample()
 
     def get_syn_max_lines(self):
