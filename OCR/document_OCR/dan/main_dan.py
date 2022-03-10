@@ -152,7 +152,6 @@ if __name__ == "__main__":
             "use_2d_pe": True,  # use 2D positional embedding
             "use_1d_pe": True,  # use 1D positional embedding
             "attention_win": 100,  # length of attention window
-            "weight_end_of_prediction": True,  # add more weights for end-of-transcription token in cross-entropy loss
             # Curriculum dropout
             "dropout_scheduler": {
                 "function": exponential_dropout_scheduler,
