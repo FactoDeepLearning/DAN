@@ -151,6 +151,7 @@ if __name__ == "__main__":
             "dec_dim_feedforward": 256,  # number of dimension for feedforward layer in transformer decoder layers
             "use_2d_pe": True,  # use 2D positional embedding
             "use_1d_pe": True,  # use 1D positional embedding
+            "use_lstm": False,
             "attention_win": 100,  # length of attention window
             # Curriculum dropout
             "dropout_scheduler": {

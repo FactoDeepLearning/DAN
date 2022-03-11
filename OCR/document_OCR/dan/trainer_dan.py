@@ -54,7 +54,6 @@ class Manager(OCRManager):
             simulated_y_pred = y
 
         with autocast(enabled=self.params["training_params"]["use_amp"]):
-            hidden_emb = None
             hidden_predict = None
             cache = None
 
@@ -66,12 +65,12 @@ class Manager(OCRManager):
             features = torch.flatten(pos_features, start_dim=2, end_dim=3).permute(2, 0, 1)
             enhanced_features = pos_features
             enhanced_features = torch.flatten(enhanced_features, start_dim=2, end_dim=3).permute(2, 0, 1)
-            output, pred, hidden_emb, hidden_predict, cache, weights = self.models["decoder"](features, enhanced_features,
+            output, pred, hidden_predict, cache, weights = self.models["decoder"](features, enhanced_features,
                                                                                simulated_y_pred[:, :-1],
                                                                                reduced_size,
                                                                                [max(y_len) for _ in range(b)],
                                                                                features_size,
-                                                                               start=0, hidden_emb=hidden_emb,
+                                                                               start=0,
                                                                                hidden_predict=hidden_predict,
                                                                                cache=cache,
                                                                                keep_all_weights=True)
@@ -115,7 +114,6 @@ class Manager(OCRManager):
             confidence_scores = list()
             cache = None
             hidden_predict = None
-            hidden_emb = None
             if b > 1:
                 features_list = list()
                 for i in range(b):
@@ -136,7 +134,7 @@ class Manager(OCRManager):
             enhanced_features = torch.flatten(enhanced_features, start_dim=2, end_dim=3).permute(2, 0, 1)
 
             for i in range(0, max_chars):
-                output, pred, hidden_emb, hidden_predict, cache, weights = self.models["decoder"](features, enhanced_features, predicted_tokens, reduced_size, predicted_tokens_len, features_size, start=0, hidden_emb=hidden_emb, hidden_predict=hidden_predict, cache=cache, num_pred=1)
+                output, pred, hidden_predict, cache, weights = self.models["decoder"](features, enhanced_features, predicted_tokens, reduced_size, predicted_tokens_len, features_size, start=0, hidden_predict=hidden_predict, cache=cache, num_pred=1)
                 whole_output.append(output)
                 confidence_scores.append(torch.max(torch.softmax(pred[:, :], dim=1), dim=1).values)
                 coverage_vector = torch.clamp(coverage_vector + weights, 0, 1)

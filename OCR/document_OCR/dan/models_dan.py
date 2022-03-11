@@ -262,22 +262,24 @@ class GlobalHTADecoder(Module):
         self.enc_dim = params["enc_dim"]
         self.dec_l_max = params["l_max"]
 
-        self.features_updater = FeaturesUpdater(params)
-
         self.dropout = Dropout(params["dec_pred_dropout"])
         self.dec_att_win = params["attention_win"] if params["attention_win"] is not None else 1
+        self.use_1d_pe = "use_1d_pe" not in params or params["use_1d_pe"]
+        self.use_lstm = params["use_lstm"]
 
+        self.features_updater = FeaturesUpdater(params)
         self.att_decoder = GlobalAttDecoder(params)
 
         self.emb = Embedding(num_embeddings=params["vocab_size"]+3, embedding_dim=self.enc_dim)
         self.pe_1d = PositionalEncoding1D(self.enc_dim, self.dec_l_max, params["device"])
-        self.use_1d_pe = "use_1d_pe" not in params or params["use_1d_pe"]
+
+        if self.use_lstm:
+            self.lstm_predict = LSTM(self.enc_dim, self.enc_dim)
 
         vocab_size = params["vocab_size"] + 1
-
         self.end_conv = Conv1d(self.enc_dim, vocab_size, kernel_size=1)
 
-    def forward(self, raw_features_1d, enhanced_features_1d, tokens, reduced_size, token_len, features_size, start=0, hidden_emb=None, hidden_predict=None, cache=None, num_pred=None, keep_all_weights=False, token_line=None, token_pg=None):
+    def forward(self, raw_features_1d, enhanced_features_1d, tokens, reduced_size, token_len, features_size, start=0, hidden_predict=None, cache=None, num_pred=None, keep_all_weights=False, token_line=None, token_pg=None):
         device = raw_features_1d.device
 
         # Token to Embedding
@@ -321,12 +323,15 @@ class GlobalHTADecoder(Module):
                                         predict_last_n_only=num_pred,
                                         keep_all_weights=keep_all_weights)
 
+        if self.use_lstm:
+            output, hidden_predict = self.lstm_predict(output, hidden_predict)
+
         dp_output = self.dropout(relu(output))
         preds = self.end_conv(dp_output.permute(1, 2, 0))
 
         if not keep_all_weights:
             weights = torch.sum(weights, dim=1, keepdim=True).reshape(-1, 1, features_size[2], features_size[3])
-        return output, preds, hidden_emb, hidden_predict, cache, weights
+        return output, preds, hidden_predict, cache, weights
 
     def generate_enc_mask(self, batch_reduced_size, total_size, device):
         """
