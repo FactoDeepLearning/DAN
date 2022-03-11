@@ -145,7 +145,7 @@ class MetricManager:
                 value = compute_global_mAP(self.epoch_metrics[metric_name])
             elif metric_name == "ger":
                 value = np.sum(self.epoch_metrics["edit_graph"]) / np.sum(self.epoch_metrics["nb_nodes_and_edges"])
-                display_values["percent_pp_op"] = np.sum(self.epoch_metrics["nb_pp_op_layout"]) / np.sum(self.epoch_metrics["nb_gt_layout_token"])
+                display_values["percent_pp_op"] = round(np.sum(self.epoch_metrics["nb_pp_op_layout"]) / np.sum(self.epoch_metrics["nb_gt_layout_token"]), 4)
             elif value is None:
                 continue
 
@@ -343,8 +343,13 @@ def compute_global_mAP(list_AP_per_class):
     for doc_AP_per_class in list_AP_per_class:
         APs = np.array([np.mean(doc_AP_per_class[key][0]) for key in doc_AP_per_class.keys()])
         weights = np.array([doc_AP_per_class[key][1] for key in doc_AP_per_class.keys()])
-        mAP_per_doc.append(np.average(APs, weights=weights))
+        if np.sum(weights) == 0:
+            mAP_per_doc.append(0)
+        else:
+            mAP_per_doc.append(np.average(APs, weights=weights))
         weights_per_doc.append(np.sum(weights))
+    if np.sum(weights_per_doc) == 0:
+        return 0
     return np.average(mAP_per_doc, weights=weights_per_doc)
 
 
