@@ -8,6 +8,7 @@ The paper is available at COMING SOON
 To discover my other works, here is my [academic page](https://factodeeplearning.github.io/).
 
 Click to see the demo:
+
 [![Click to see demo](https://img.youtube.com/vi/HrrUsQfW66E/0.jpg)](https://www.youtube.com/watch?v=HrrUsQfW66E)
 
 This work focus on handwritten text and layout recognition through the use of an end-to-end segmentation-free attention-based network.
