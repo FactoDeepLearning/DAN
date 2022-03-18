@@ -36,7 +36,7 @@ def train_and_test(rank, params):
     model.params["training_params"]["load_epoch"] = "best"
     model.load_model()
 
-    metrics = ["cer", "wer", "time", "layout_mAP",  "ger"]
+    metrics = ["cer", "wer", "time", "map_cer",  "loer"]
     for dataset_name in params["dataset_params"]["datasets"].keys():
         for set_name in ["test", "valid", "train"]:
             model.predict("{}-{}".format(dataset_name, set_name), [(dataset_name, set_name), ], metrics, output=True)
@@ -45,7 +45,7 @@ def train_and_test(rank, params):
 if __name__ == "__main__":
 
     dataset_name = "READ_2016"  # ["RIMES", "READ_2016"]
-    dataset_level = "page"
+    dataset_level = "page"  # ["page", "double_page"]
     dataset_variant = "_sem"
 
     # max number of lines for synthetic documents
@@ -189,7 +189,7 @@ if __name__ == "__main__":
             "expected_metric_value": "low",  # ["high", "low"] What is best for the focus metric value
             "set_name_focus_metric": "{}-valid".format(dataset_name),  # Which dataset to focus on to select best weights
             "train_metrics": ["loss_ce", "cer", "wer", "syn_max_lines"],  # Metrics name for training
-            "eval_metrics": ["cer", "wer", "layout_mAP"],  # Metrics name for evaluation on validation set during training
+            "eval_metrics": ["cer", "wer", "map_cer"],  # Metrics name for evaluation on validation set during training
             "force_cpu": False,  # True for debug purposes
             "max_char_prediction": 3000,  # max number of token prediction
             # Keep teacher forcing rate to 20% during whole training

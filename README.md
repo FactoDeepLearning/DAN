@@ -7,7 +7,8 @@ The paper is available at COMING SOON
 
 To discover my other works, here is my [academic page](https://factodeeplearning.github.io/).
 
-DEMO: COMING SOON
+Click to see the demo:
+[![Click to see demo](https://img.youtube.com/vi/HrrUsQfW66E/0.jpg)](https://www.youtube.com/watch?v=HrrUsQfW66E)
 
 This work focus on handwritten text and layout recognition through the use of an end-to-end segmentation-free attention-based network.
 We evaluate the DAN on two public datasets: RIMES and READ 2016 at single-page and double-page levels.
@@ -16,9 +17,9 @@ We obtained the following results:
 
 |                         | CER (%) | WER (%) | LOER (%) | mAP_cer (%) |
 |:-----------------------:|---------|:-------:|:--------:|-------------|
-|       RIMES (page)      | 4.55    |  11.82  |   5.02   | 92.79       |
-|     READ 2016 (page)    | 3.89    |  14.45  |   6.27   | 94.10       |
-| READ 2016 (double page) | 3.90    |  15.05  |   5.31   | 94.19       |
+|       RIMES (single page)      | 4.54    |  11.85  |   3.82   | 93.74       |
+|     READ 2016 (single page)    | 3.53    |  13.33  |   5.94   | 92.57       |
+| READ 2016 (double page) | 3.69    |  14.20  |   4.60   | 93.92       |
 
 
 Pretrained model weights are available [here](https://git.litislab.fr/dcoquenet/dan).

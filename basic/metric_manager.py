@@ -67,10 +67,10 @@ class MetricManager:
         self.linked_metrics = {
             "cer": ["edit_chars", "nb_chars"],
             "wer": ["edit_words", "nb_words"],
-            "ger": ["edit_graph", "nb_nodes_and_edges", "nb_pp_op_layout", "nb_gt_layout_token"],
+            "loer": ["edit_graph", "nb_nodes_and_edges", "nb_pp_op_layout", "nb_gt_layout_token"],
             "precision": ["precision", "weights"],
-            "layout_mAP_per_class": ["layout_mAP", ],
-            "layout_precision_per_class_per_threshold": ["layout_mAP", ],
+            "map_cer_per_class": ["map_cer", ],
+            "layout_precision_per_class_per_threshold": ["map_cer", ],
         }
 
         self.init_metrics()
@@ -119,16 +119,18 @@ class MetricManager:
                     sample_time = total_time / np.sum(self.epoch_metrics["nb_samples"])
                     display_values["sample_time"] = round(sample_time, 4)
                     value = total_time
-                elif metric_name == "layout_mAP_per_class":
-                    value = compute_global_mAP_per_class(self.epoch_metrics["layout_mAP"])
+                elif metric_name == "loer":
+                    display_values["pper"] = round(np.sum(self.epoch_metrics["nb_pp_op_layout"]) / np.sum(self.epoch_metrics["nb_gt_layout_token"]), 4)
+                elif metric_name == "map_cer_per_class":
+                    value = compute_global_mAP_per_class(self.epoch_metrics["map_cer"])
                     for key in value.keys():
-                        display_values["mAP_" + key] = round(value[key], 4)
+                        display_values["map_cer_" + key] = round(value[key], 4)
                     continue
                 elif metric_name == "layout_precision_per_class_per_threshold":
-                    value = compute_global_precision_per_class_per_threshold(self.epoch_metrics["layout_mAP"])
+                    value = compute_global_precision_per_class_per_threshold(self.epoch_metrics["map_cer"])
                     for key_class in value.keys():
                         for threshold in value[key_class].keys():
-                            display_values["mAP_{}_{}".format(key_class, threshold)] = round(
+                            display_values["map_cer_{}_{}".format(key_class, threshold)] = round(
                                 value[key_class][threshold], 4)
                     continue
             if metric_name == "cer":
@@ -141,11 +143,10 @@ class MetricManager:
                     display_values["nb_words"] = np.sum(self.epoch_metrics["nb_words"])
             elif metric_name in ["loss", "loss_ctc", "loss_ce", "syn_max_lines"]:
                 value = np.average(self.epoch_metrics[metric_name], weights=np.array(self.epoch_metrics["nb_samples"]))
-            elif metric_name == "layout_mAP":
+            elif metric_name == "map_cer":
                 value = compute_global_mAP(self.epoch_metrics[metric_name])
-            elif metric_name == "ger":
+            elif metric_name == "loer":
                 value = np.sum(self.epoch_metrics["edit_graph"]) / np.sum(self.epoch_metrics["nb_nodes_and_edges"])
-                display_values["percent_pp_op"] = round(np.sum(self.epoch_metrics["nb_pp_op_layout"]) / np.sum(self.epoch_metrics["nb_gt_layout_token"]), 4)
             elif value is None:
                 continue
 
@@ -170,7 +171,7 @@ class MetricManager:
                 metrics["nb_words"] = [len(gt) for gt in split_gt]
             elif metric_name in ["loss_ctc", "loss_ce", "loss", "syn_max_lines", ]:
                 metrics[metric_name] = [values[metric_name], ]
-            elif metric_name == "layout_mAP":
+            elif metric_name == "map_cer":
                 pp_pred = list()
                 pp_score = list()
                 for pred, score in zip(values["str_x"], values["confidence_score"]):
@@ -178,7 +179,7 @@ class MetricManager:
                     pp_pred.append(pred_score[0])
                     pp_score.append(pred_score[1])
                 metrics[metric_name] = [compute_layout_mAP_per_class(y, x, conf, self.matching_tokens) for x, conf, y in zip(pp_pred, pp_score, values["str_y"])]
-            elif metric_name == "ger":
+            elif metric_name == "loer":
                 pp_pred = list()
                 metrics["nb_pp_op_layout"] = list()
                 for pred in values["str_x"]:
