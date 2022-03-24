@@ -3,11 +3,12 @@ This repository is a public implementation of the paper: "DAN: a Segmentation-fr
 
 ![Prediction visualization](visual.png)
 
-The paper is available at COMING SOON
+The paper is available at https://arxiv.org/abs/2203.12273.
 
 To discover my other works, here is my [academic page](https://factodeeplearning.github.io/).
 
 Click to see the demo:
+
 [![Click to see demo](https://img.youtube.com/vi/HrrUsQfW66E/0.jpg)](https://www.youtube.com/watch?v=HrrUsQfW66E)
 
 This work focus on handwritten text and layout recognition through the use of an end-to-end segmentation-free attention-based network.
@@ -115,7 +116,14 @@ The outputs files are split into two subfolders: "checkpoints" and "results". \
 ## Citation
 
 ```bibtex
-COMING SOON
+@misc{Coquenet2022b,
+  author = {Coquenet, Denis and Chatelain, Clément and Paquet, Thierry},
+  title = {DAN: a Segmentation-free Document Attention Network for Handwritten Document Recognition},
+  doi = {10.48550/ARXIV.2203.12273},
+  url = {https://arxiv.org/abs/2203.12273},
+  publisher = {arXiv},
+  year = {2022},
+}
 ```
 
 ## License
