@@ -3,6 +3,9 @@ This repository is a public implementation of the paper: "DAN: a Segmentation-fr
 
 ![Prediction visualization](visual.png)
 
+The model uses a character-level attention to handle slanted lines:
+![Prediction visualization on slanted lines](visual_slanted_lines.png)
+
 The paper is available at https://arxiv.org/abs/2203.12273.
 
 To discover my other works, here is my [academic page](https://factodeeplearning.github.io/).
