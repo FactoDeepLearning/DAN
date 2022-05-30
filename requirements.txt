@@ -30,7 +30,6 @@ manimlib==0.2.0
 ManimPango==0.4.0.post2
 mapbox-earcut==0.12.11
 Markdown==3.3.6
-masked-norm==0.0.0
 matplotlib==3.5.1
 moderngl==5.6.4
 moderngl-window==2.4.1
@@ -41,7 +40,6 @@ oauthlib==3.2.0
 opencv-python==4.5.5.62
 packaging==21.3
 Pillow==9.0.1
-pkg_resources==0.0.0
 progressbar==2.5
 protobuf==3.19.4
 pyasn1==0.4.8
