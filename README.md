@@ -22,8 +22,8 @@ We obtained the following results:
 |                         | CER (%) | WER (%) | LOER (%) | mAP_cer (%) |
 |:-----------------------:|---------|:-------:|:--------:|-------------|
 |       RIMES (single page)      | 4.54    |  11.85  |   3.82   | 93.74       |
-|     READ 2016 (single page)    | 3.53    |  13.33  |   5.94   | 92.57       |
-| READ 2016 (double page) | 3.69    |  14.20  |   4.60   | 93.92       |
+|     READ 2016 (single page)    | 3.43    |  13.05  |   5.17   | 93.32       |
+| READ 2016 (double page) | 3.70    |  14.15  |   4.98   | 93.09       |
 
 
 Pretrained model weights are available [here](https://git.litislab.fr/dcoquenet/dan).

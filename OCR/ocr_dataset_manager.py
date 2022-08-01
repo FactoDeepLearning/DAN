@@ -683,7 +683,7 @@ class OCRDataset(GenericDataset):
             "begin": "ⓟ",
             "sem": "ⓟ",
         }
-        area_top = coords["top"]
+        area_top = 0 if crop else coords["top"]
         area_left = coords["left"]
         area_right = coords["right"]
         area_bottom = coords["bottom"]
@@ -769,7 +769,9 @@ class OCRDataset(GenericDataset):
                     ann_label_blocks.append(list())
                     ann_top += randint(0, max(15, body_top-ann_top-20))
 
-            area_top = area_top + max(ann_height, body_height) + randint(25, 100)
+            area_top = area_top + max(ann_height, body_height)
+            if nb_lines > 0:
+               area_top += randint(25, 100)
 
             ann_full_labels = {
                 "raw": "",
