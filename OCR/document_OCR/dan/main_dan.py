@@ -4,7 +4,7 @@
 #  - Denis Coquenet
 #
 #  This software is a computer program written in Python whose purpose is 
-#  to recognize text and layout from full-page images with end-to-end depp neural networks.
+#  to recognize text and layout from full-page images with end-to-end deep neural networks.
 #
 #  This software is governed by the CeCILL-C license under French law and
 #  abiding by the rules of distribution of free software.  You can  use,

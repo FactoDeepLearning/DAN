@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: 'DAN: Document Attention Network'
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: 'Denis '
+    family-names: Coquenet
+    orcid: 'https://orcid.org/0000-0001-5203-9423'
+  - name: Université de Rouen Normandie
+  - name: INSA Rouen
+  - name: LITIS
+identifiers:
+  - type: url
+    value: 'https://arxiv.org/abs/2203.12273'
+repository-code: 'https://github.com/FactoDeepLearning/DAN/'
+license: CECILL-C
